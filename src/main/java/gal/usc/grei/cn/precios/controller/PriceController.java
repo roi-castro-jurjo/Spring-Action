@@ -3,12 +3,11 @@ package gal.usc.grei.cn.precios.controller;
 import gal.usc.grei.cn.precios.domain.Price;
 import gal.usc.grei.cn.precios.service.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,13 +30,19 @@ public class PriceController {
     /**
      * Method: GET
      * URL to access: /prices
-     * Objective: retrieve all stock prices
+     * Objective: retrieve all stock prices in a paginated format
      *
-     * @return The data of all the stocks.
+     * @param page Page number (0-indexed)
+     * @param size Number of items per page
+     * @return Paginated data of all the stocks.
      */
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Price>> get() {
-        return ResponseEntity.of(Optional.ofNullable(priceService.getAllPrices()));
+    @GetMapping(path = "/prices", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<Price>> getPricesPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<Price> prices = priceService.getAllPrices(PageRequest.of(page, size));
+        return ResponseEntity.ok(prices);
     }
 
     /**
@@ -46,10 +51,17 @@ public class PriceController {
      * Objective: retrieve the stock based on its symbol.
      *
      * @param symbol The symbol of the stock to retrieve
-     * @return If the symbol is valid, the data of the stock.
+     * @param page Page number (0-indexed)
+     * @param size Number of items per page
+     * @return Paginated data of all the stocks.
      */
     @GetMapping(path = "{symbol}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Price>> get(@PathVariable("symbol") String symbol) {
-        return ResponseEntity.of(priceService.getBySymbol(symbol));
+    ResponseEntity<Page<Price>> get(
+            @PathVariable("symbol") String symbol,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<Price> prices = priceService.getBySymbol(symbol, PageRequest.of(page, size));
+        return ResponseEntity.ok(prices);
     }
 }

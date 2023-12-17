@@ -3,8 +3,10 @@ package gal.usc.grei.cn.precios.service;
 import gal.usc.grei.cn.precios.domain.Price;
 import gal.usc.grei.cn.precios.repository.PriceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,16 +30,16 @@ public class PriceServiceImpl implements PriceService{
      * {@inheritDoc}
      */
     @Override
-    public Optional<List<Price>> getBySymbol(String symbol) {
-        return priceRepository.findBySymbol(symbol);
+    public Page<Price> getBySymbol(String symbol, Pageable pageable) {
+        return priceRepository.findBySymbol(symbol, pageable);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Price> getAllPrices() {
-        return priceRepository.findAll();
+    public Page<Price> getAllPrices(Pageable pageable) {
+        return priceRepository.findAll(pageable);
     }
 
 

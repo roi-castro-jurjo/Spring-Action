@@ -1,7 +1,9 @@
 package gal.usc.grei.cn.precios.service;
 
 import gal.usc.grei.cn.precios.domain.Price;
+import org.springframework.data.domain.Page;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,12 +14,12 @@ public interface PriceService {
      * @param symbol The symbol of the stock to retrieve
      * @return The data of the stock with the provided parameters (if found).
      */
-    Optional<List<Price>> getBySymbol(String symbol);
+    Page<Price> getBySymbol(String symbol, Pageable pageable);
 
     /**
      * Method that allows retrieving all prices of all stocks.
      *
      * @return The data of all the stocks
      */
-    List<Price> getAllPrices();
+    Page<Price> getAllPrices(Pageable pageable);
 }
