@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/prices")
@@ -30,6 +31,18 @@ public class PriceController {
     /**
      * Method: GET
      * URL to access: /prices
+     * Objective: retrieve all stock prices
+     *
+     * @return The data of all the stocks.
+     */
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Price>> get() {
+        return ResponseEntity.of(Optional.ofNullable(priceService.getAllPrices()));
+    }
+
+    /**
+     * Method: GET
+     * URL to access: /prices/{symbol}
      * Objective: retrieve the stock based on its symbol.
      *
      * @param symbol The symbol of the stock to retrieve

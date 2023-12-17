@@ -31,4 +31,14 @@ public class PriceServiceImpl implements PriceService{
     public Optional<List<Price>> getBySymbol(String symbol) {
         return priceRepository.findBySymbol(symbol);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Price> getAllPrices() {
+        return priceRepository.findAll();
+    }
+
+
 }

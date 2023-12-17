@@ -13,4 +13,11 @@ public interface PriceService {
      * @return The data of the stock with the provided parameters (if found).
      */
     public Optional<List<Price>> getBySymbol(String symbol);
+
+    /**
+     * Method that allows retrieving all prices of all stocks.
+     *
+     * @return The data of all the stocks
+     */
+    public List<Price> getAllPrices();
 }
