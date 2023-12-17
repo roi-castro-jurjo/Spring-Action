@@ -1,7 +1,12 @@
 package gal.usc.grei.cn.precios.service;
 
+import gal.usc.grei.cn.precios.domain.Price;
 import gal.usc.grei.cn.precios.domain.Purchase;
+import gal.usc.grei.cn.precios.domain.criteria.PurchaseSearchCriteria;
+import gal.usc.grei.cn.precios.domain.criteria.StockSearchCriteria;
 import gal.usc.grei.cn.precios.repository.PurchaseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
@@ -9,6 +14,15 @@ import java.util.Optional;
 public interface PurchaseService {
 
     Optional<Purchase> get(String id);
+
+    /**
+     * Retrieves a paginated list of purchases that match the specified search criteria.
+     *
+     * @param criteria filtering parameters.
+     * @param pageable pagination information.
+     * @return A Page<Purchase> object containing the paginated list of purchases that match the given criteria.
+     */
+    public Page<Purchase> getPurchases(PurchaseSearchCriteria criteria, Pageable pageable);
 
     /**
      * Method that allows inserting a new purchase into the database.
