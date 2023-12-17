@@ -1,7 +1,10 @@
 package gal.usc.grei.cn.precios.domain.criteria;
 
+import lombok.Builder;
+
 import java.util.Objects;
 
+@Builder
 public class StockSearchCriteria {
     private Double highGreater;
     private Double highLess;
@@ -13,8 +16,11 @@ public class StockSearchCriteria {
     private Double closeLess;
     private Double openGreater;
     private Double openLess;
-    private String date; // Formato: "YYYY-MM-DD"
+    private String date;
     private String symbol;
+
+    public StockSearchCriteria() {
+    }
 
     public Double getHighGreater() {
         return highGreater;

@@ -53,6 +53,7 @@ public class PriceServiceImpl implements PriceService{
     @Override
     public Page<Price> getStocks(StockSearchCriteria criteria, Pageable pageable) {
         Query query = new Query().with(pageable);
+        System.out.println(criteria);
 
         if (criteria.getHighGreater() != null) {
             query.addCriteria(Criteria.where("high").gt(criteria.getHighGreater()));
