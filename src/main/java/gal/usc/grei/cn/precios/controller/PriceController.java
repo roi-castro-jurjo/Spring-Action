@@ -1,6 +1,7 @@
 package gal.usc.grei.cn.precios.controller;
 
 import gal.usc.grei.cn.precios.domain.Price;
+import gal.usc.grei.cn.precios.domain.criteria.StockSearchCriteria;
 import gal.usc.grei.cn.precios.service.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,18 +31,32 @@ public class PriceController {
     /**
      * Method: GET
      * URL to access: /prices
-     * Objective: retrieve all stock prices in a paginated format
+     * Objective: Retrieve all stock prices in a paginated format with optional filtering criteria.
      *
-     * @param page Page number (0-indexed)
-     * @param size Number of items per page
-     * @return Paginated data of all the stocks.
+     * @param criteria The criteria object containing various optional filtering parameters
+     * @param date     Optional date filter. If provided, overrides 'date' in criteria.
+     * @param symbol   Optional symbol filter. If provided, overrides 'symbol' in criteria.
+     * @param page     Page number (0-indexed) for pagination.
+     * @param size     Number of items per page for pagination.
+     * @return         Paginated data of stocks, optionally filtered based on provided criteria.
      */
+
     @GetMapping(path = "/prices", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<Price>> getPricesPaginated(
+    public ResponseEntity<Page<Price>> getPrices(
+            StockSearchCriteria criteria,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String symbol,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<Price> prices = priceService.getAllPrices(PageRequest.of(page, size));
+        if (date != null) {
+            criteria.setDate(date);
+        }
+        if (symbol != null) {
+            criteria.setSymbol(symbol);
+        }
+
+        Page<Price> prices = priceService.getStocks(criteria, PageRequest.of(page, size));
         return ResponseEntity.ok(prices);
     }
 
