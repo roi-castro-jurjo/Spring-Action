@@ -33,8 +33,7 @@ public class PriceController {
      * @param symbol The symbol of the stock to retrieve
      * @return If the symbol is valid, the data of the stock.
      */
-    @GetMapping(path = "{symbol}", produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping(path = "{symbol}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Price> get(@PathVariable("symbol") String symbol) {
         return ResponseEntity.of(priceService.get(symbol));
     }
