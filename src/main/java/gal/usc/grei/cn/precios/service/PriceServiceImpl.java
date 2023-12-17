@@ -9,7 +9,9 @@ import java.util.Optional;
 
 @Service
 public class PriceServiceImpl implements PriceService{
+
     private final PriceRepository priceRepository;
+
 
     /**
      * Constructor of the class
@@ -20,11 +22,9 @@ public class PriceServiceImpl implements PriceService{
         this.priceRepository = priceRepository;
     }
 
+
     /**
-     * Method that allows retrieving the price of a stock by its symbol.
-     *
-     * @param symbol The symbol of the stock to retrieve
-     * @return The data of the stock with the provided parameters (if found).
+     * {@inheritDoc}
      */
     @Override
     public Optional<Price> get(String symbol) {
