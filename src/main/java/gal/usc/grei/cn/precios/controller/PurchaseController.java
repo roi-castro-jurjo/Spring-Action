@@ -162,8 +162,6 @@ public class PurchaseController {
 
 
 
-
-
     /**
      * Inserts a new purchase into the database. The purchase data is validated before insertion.
      *

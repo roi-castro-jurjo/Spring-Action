@@ -85,7 +85,7 @@ public class PriceServiceImpl implements PriceService{
         if (criteria.getOpenLess() != null) {
             query.addCriteria(Criteria.where("open").lt(criteria.getOpenLess()));
         }
-        if (criteria.getDate() != null && isValidDate(criteria.getDate())) {
+        if (isValidDate(criteria.getDate())) {
             query.addCriteria(Criteria.where("date").is(criteria.getDate()));
         }
         if (criteria.getSymbol() != null) {
@@ -115,11 +115,15 @@ public class PriceServiceImpl implements PriceService{
 
 
     private boolean isValidDate(String dateStr) {
-        try {
-            LocalDate.parse(dateStr, DATE_FORMATTER);
-            return true;
-        } catch (DateTimeParseException e) {
+        if (dateStr == null){
             return false;
+        } else {
+            try {
+                LocalDate.parse(dateStr, DATE_FORMATTER);
+                return true;
+            } catch (DateTimeParseException e) {
+                return false;
+            }
         }
     }
 

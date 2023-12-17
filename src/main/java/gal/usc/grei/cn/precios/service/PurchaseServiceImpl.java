@@ -1,5 +1,6 @@
 package gal.usc.grei.cn.precios.service;
 
+import gal.usc.grei.cn.precios.domain.PaymentDetails;
 import gal.usc.grei.cn.precios.domain.Purchase;
 import gal.usc.grei.cn.precios.domain.criteria.PurchaseSearchCriteria;
 import gal.usc.grei.cn.precios.repository.PurchaseRepository;
@@ -12,9 +13,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,11 +89,15 @@ public class PurchaseServiceImpl implements PurchaseService{
     }
 
     private boolean isValidDate(String dateStr) {
-        try {
-            LocalDate.parse(dateStr, DATE_FORMATTER);
-            return true;
-        } catch (DateTimeParseException e) {
+        if (dateStr == null){
             return false;
+        } else {
+            try {
+                LocalDate.parse(dateStr, DATE_FORMATTER);
+                return true;
+            } catch (DateTimeParseException e) {
+                return false;
+            }
         }
     }
 
@@ -105,13 +112,55 @@ public class PurchaseServiceImpl implements PurchaseService{
         }
 
         if (purchase.getSymbol() == null || purchase.getSymbol().isEmpty() ||
-                purchase.getVolume() == null ||
-                purchase.getUnit() == null ||
-                purchase.getTotal() == null ||
-                purchase.getDate() == null || !isValidDate(purchase.getDate())) {
+            purchase.getVolume() == null ||
+            purchase.getUnit() == null ||
+            purchase.getTotal() == null ||
+            !isValidDate(purchase.getDate()) ||
+            purchase.getStatus() == null ||
+            isValidPaymentDetails(purchase.getPaymentDetails())) {
             return Optional.empty();
         }
 
         return Optional.of(purchaseRepository.insert(purchase));
     }
+
+    private boolean isValidPaymentDetails(PaymentDetails details){
+        if (details == null || details.getPaymentMethod() == null || details.getPaymentMethod().isEmpty() || details.getFullName() == null || details.getFullName().isEmpty()) {
+            return false;
+        }
+
+        return isCardNumberValid(details.getCardNumber()) &&
+                isCardExpiryDateValid(details.getCardExpiryDate()) &&
+                isCardCVCValid(details.getCardCVC());
+    }
+
+
+    private boolean isCardNumberValid(String cardNumber) {
+        return cardNumber != null && cardNumber.matches("\\d{16}") && !cardNumber.endsWith("3");
+    }
+
+    private boolean isCardExpiryDateValid(String cardExpiryDate) {
+        if (cardExpiryDate == null || !cardExpiryDate.matches("\\d{2}/\\d{2}") || cardExpiryDate.length() != 5) {
+            return false;
+        }
+
+        try {
+            String[] parts = cardExpiryDate.split("/");
+            int month = Integer.parseInt(parts[0]);
+            int year = Integer.parseInt(parts[1]) + 2000;
+
+            LocalDate expiryDate = LocalDate.of(year, month, 1).with(TemporalAdjusters.lastDayOfMonth());
+            return !expiryDate.isBefore(LocalDate.now());
+        } catch (DateTimeException e) {
+            return false;
+        }
+    }
+
+    private boolean isCardCVCValid(String cardCVC) {
+        return cardCVC != null && cardCVC.matches("\\d{3}");
+    }
+
+
+
+
 }

@@ -26,6 +26,10 @@ public class Purchase {
     private Float unit;
     @NotNull(message = "The total price cannot be empty")
     private Float total;
+    @NotNull(message = "The payment details cannot be empty")
+    private PaymentDetails paymentDetails;
+    @NotNull(message = "The status cannot be empty")
+    private OrderStatus status;
 
     public String getId() {
         return id;
@@ -75,17 +79,33 @@ public class Purchase {
         this.total = total;
     }
 
+    public PaymentDetails getPaymentDetails() {
+        return paymentDetails;
+    }
+
+    public void setPaymentDetails(PaymentDetails paymentDetails) {
+        this.paymentDetails = paymentDetails;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Purchase purchase = (Purchase) o;
-        return Objects.equals(id, purchase.id) && Objects.equals(date, purchase.date) && Objects.equals(symbol, purchase.symbol) && Objects.equals(volume, purchase.volume) && Objects.equals(unit, purchase.unit) && Objects.equals(total, purchase.total);
+        return Objects.equals(id, purchase.id) && Objects.equals(date, purchase.date) && Objects.equals(symbol, purchase.symbol) && Objects.equals(volume, purchase.volume) && Objects.equals(unit, purchase.unit) && Objects.equals(total, purchase.total) && Objects.equals(paymentDetails, purchase.paymentDetails) && status == purchase.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, date, symbol, volume, unit, total);
+        return Objects.hash(id, date, symbol, volume, unit, total, paymentDetails, status);
     }
 
     @Override
@@ -97,6 +117,8 @@ public class Purchase {
                 ", volume=" + volume +
                 ", unit=" + unit +
                 ", total=" + total +
+                ", paymentDetails=" + paymentDetails +
+                ", status=" + status +
                 '}';
     }
 }
