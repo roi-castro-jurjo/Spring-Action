@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface PriceRepository extends MongoRepository<Price, String> {
     @Query(value = "{'symbol': '?0', 'date': '?1'}")
-    public Optional<Price> findPrecioBySymbolAndDate(String simbolo, String fecha);
+    public Optional<Price> findPrecioBySymbolAndDate(String symbol, String date);
 }
