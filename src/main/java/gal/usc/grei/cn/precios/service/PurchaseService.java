@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface PurchaseService {
 
-    public Optional<Purchase> get(String id);
+    Optional<Purchase> get(String id);
 
     /**
      * Method that allows inserting a new purchase into the database.
@@ -16,5 +16,5 @@ public interface PurchaseService {
      * @return The data of the purchase once inserted, including the id.
      * @throws ResponseStatusException Exception thrown in case any incorrect information is provided.
      */
-    public Optional<Purchase> create(Purchase purchase);
+    Optional<Purchase> create(Purchase purchase);
 }

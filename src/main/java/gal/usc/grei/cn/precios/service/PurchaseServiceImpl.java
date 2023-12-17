@@ -27,7 +27,6 @@ public class PurchaseServiceImpl implements PurchaseService{
      */
     @Override
     public Optional<Purchase> get(String id) {
-        // The purchase is retrieved by the id
         return purchaseRepository.findById(id);
     }
 
@@ -36,9 +35,7 @@ public class PurchaseServiceImpl implements PurchaseService{
      */
     @Override
     public Optional<Purchase> create(Purchase purchase) {
-        // We check that the purchase has arrived without an id:
         if(purchase.getId() == null || purchase.getId().isEmpty()) {
-            // If so, an optional with the data of the inserted purchase is returned.
             return Optional.of(purchaseRepository.insert(purchase));
         }
         return Optional.empty();
