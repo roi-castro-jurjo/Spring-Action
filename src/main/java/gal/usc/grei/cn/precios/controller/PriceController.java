@@ -6,6 +6,8 @@ import gal.usc.grei.cn.precios.service.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +49,9 @@ public class PriceController {
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String symbol,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir) {
 
         if (date != null) {
             criteria.setDate(date);
@@ -56,7 +60,15 @@ public class PriceController {
             criteria.setSymbol(symbol);
         }
 
-        Page<Price> prices = priceService.getStocks(criteria, PageRequest.of(page, size));
+        Pageable pageable;
+        if (sortBy != null && !sortBy.isEmpty()) {
+            Sort.Direction direction = Sort.Direction.fromString(sortDir);
+            pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        } else {
+            pageable = PageRequest.of(page, size);
+        }
+
+        Page<Price> prices = priceService.getStocks(criteria, pageable);
         return ResponseEntity.ok(prices);
     }
 
