@@ -100,9 +100,18 @@ public class PurchaseServiceImpl implements PurchaseService{
      */
     @Override
     public Optional<Purchase> create(Purchase purchase) {
-        if(purchase.getId() == null || purchase.getId().isEmpty()) {
-            return Optional.of(purchaseRepository.insert(purchase));
+        if (purchase.getId() != null && !purchase.getId().isEmpty()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+
+        if (purchase.getSymbol() == null || purchase.getSymbol().isEmpty() ||
+                purchase.getVolume() == null ||
+                purchase.getUnit() == null ||
+                purchase.getTotal() == null ||
+                purchase.getDate() == null || !isValidDate(purchase.getDate())) {
+            return Optional.empty();
+        }
+
+        return Optional.of(purchaseRepository.insert(purchase));
     }
 }

@@ -20,7 +20,8 @@ public interface PurchaseService {
      *
      * @param criteria filtering parameters.
      * @param pageable pagination information.
-     * @return A Page<Purchase> object containing the paginated list of purchases that match the given criteria.
+     * @return An Optional containing the data of the purchase once inserted, including the generated id,
+     *         or an empty Optional if the insertion is not successful due to validation failures.
      */
     public Page<Purchase> getPurchases(PurchaseSearchCriteria criteria, Pageable pageable);
 

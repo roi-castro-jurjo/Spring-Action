@@ -165,18 +165,26 @@ public class PurchaseController {
 
 
     /**
-     * Method: POST
-     * URL to access: /purchases
-     * Objective: insert the purchase provided as a parameter.
+     * Inserts a new purchase into the database. The purchase data is validated before insertion.
      *
-     * @param purchase the data of the purchase to insert
-     * @return If the insertion is successful, the new purchase and the URL to access it.
+     * @param purchase The data of the purchase to be inserted, expected to be valid.
+     * @return A ResponseEntity containing either:
+     *         - The newly created purchase and its access URL (HTTP 201 Created) if insertion is successful.
+     *         - A bad request message (HTTP 400 Bad Request) if the data is invalid or insertion fails.
      */
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Object> create(@Valid @RequestBody Purchase purchase) {
+    @PostMapping(path = "/purchases", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> create(@Valid @RequestBody Purchase purchase) {
         Optional<Purchase> inserted = purchaseService.create(purchase);
-        return ResponseEntity.created(URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + "/purchases/" + inserted.get().getId()))
-                .body(inserted.get());
+
+        if (inserted.isPresent()) {
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(inserted.get().getId())
+                    .toUri();
+            return ResponseEntity.created(location).body(inserted.get());
+        } else {
+            return ResponseEntity.badRequest().body("Invalid purchase data provided");
+        }
     }
 
 }
