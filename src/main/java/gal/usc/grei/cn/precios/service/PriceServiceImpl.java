@@ -5,6 +5,7 @@ import gal.usc.grei.cn.precios.repository.PriceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,7 +28,7 @@ public class PriceServiceImpl implements PriceService{
      * {@inheritDoc}
      */
     @Override
-    public Optional<Price> get(String symbol) {
-        return priceRepository.findPrecioBySymbolAndDate(symbol, "2010-01-04");
+    public Optional<List<Price>> getBySymbol(String symbol) {
+        return priceRepository.findBySymbol(symbol);
     }
 }

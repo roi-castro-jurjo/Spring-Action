@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/prices")
 public class PriceController {
@@ -34,7 +36,7 @@ public class PriceController {
      * @return If the symbol is valid, the data of the stock.
      */
     @GetMapping(path = "{symbol}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Price> get(@PathVariable("symbol") String symbol) {
-        return ResponseEntity.of(priceService.get(symbol));
+    ResponseEntity<List<Price>> get(@PathVariable("symbol") String symbol) {
+        return ResponseEntity.of(priceService.getBySymbol(symbol));
     }
 }
