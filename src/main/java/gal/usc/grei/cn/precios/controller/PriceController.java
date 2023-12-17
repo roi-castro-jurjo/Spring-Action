@@ -40,9 +40,10 @@ public class PriceController {
      * @param symbol   Optional symbol filter. If provided, overrides 'symbol' in criteria.
      * @param page     Page number (0-indexed) for pagination.
      * @param size     Number of items per page for pagination.
+     * @param sort     Optional attribute name to sort by.
+     * @param sortDir  Direction of sorting ('ASC' or 'DESC'). Used only if sort is provided.
      * @return         Paginated data of stocks, optionally filtered based on provided criteria.
      */
-
     @GetMapping(path = "/prices", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<Price>> getPrices(
             StockSearchCriteria criteria,
@@ -50,7 +51,7 @@ public class PriceController {
             @RequestParam(required = false) String symbol,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String sort,
             @RequestParam(defaultValue = "ASC") String sortDir) {
 
         if (date != null) {
@@ -61,9 +62,9 @@ public class PriceController {
         }
 
         Pageable pageable;
-        if (sortBy != null && !sortBy.isEmpty()) {
+        if (sort != null && !sort.isEmpty()) {
             Sort.Direction direction = Sort.Direction.fromString(sortDir);
-            pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+            pageable = PageRequest.of(page, size, Sort.by(direction, sort));
         } else {
             pageable = PageRequest.of(page, size);
         }
