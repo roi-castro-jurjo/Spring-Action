@@ -32,4 +32,6 @@ public interface PurchaseService {
      * @throws ResponseStatusException Exception thrown in case any incorrect information is provided.
      */
     Optional<Purchase> create(Purchase purchase);
+
+    void handlePaymentFailure(Purchase purchase);
 }

@@ -46,8 +46,6 @@ public class PaymentServiceImpl implements PaymentService{
             return CompletableFuture.completedFuture(paymentSuccess);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            purchase.setStatus(OrderStatus.FAILED);
-            purchaseRepository.save(purchase);
             return CompletableFuture.completedFuture(false);
         }
     }

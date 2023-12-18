@@ -127,9 +127,12 @@ public class PurchaseServiceImpl implements PurchaseService{
         return Optional.of(purchaseRepository.insert(purchase));
     }
 
+    @Override
+    public void handlePaymentFailure(Purchase purchase) {
+        purchase.setStatus(OrderStatus.FAILED);
 
-
-
+        purchaseRepository.save(purchase);
+    }
 
 
 }

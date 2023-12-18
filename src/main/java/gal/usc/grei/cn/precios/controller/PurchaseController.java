@@ -5,6 +5,7 @@ import gal.usc.grei.cn.precios.domain.Purchase;
 import gal.usc.grei.cn.precios.domain.criteria.PurchaseSearchCriteria;
 import gal.usc.grei.cn.precios.service.PaymentService;
 import gal.usc.grei.cn.precios.service.PriceService;
+import gal.usc.grei.cn.precios.service.PurchaseOrchestrator;
 import gal.usc.grei.cn.precios.service.PurchaseService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +29,17 @@ import java.util.regex.Pattern;
 public class PurchaseController {
     private final PurchaseService purchaseService;
     private final PaymentService paymentService;
+    private final PurchaseOrchestrator purchaseOrchestrator;
 
     /**
      * Constructor of the class
      * @param purchaseService Instance of the PurchaseService class
      */
     @Autowired
-    public PurchaseController(PurchaseService purchaseService, PaymentService paymentService) {
+    public PurchaseController(PurchaseService purchaseService, PaymentService paymentService, PurchaseOrchestrator purchaseOrchestrator) {
         this.purchaseService = purchaseService;
         this.paymentService = paymentService;
+        this.purchaseOrchestrator = purchaseOrchestrator;
     }
 
 
@@ -176,22 +179,14 @@ public class PurchaseController {
      */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> create(@Valid @RequestBody Purchase purchase) {
-        Optional<Purchase> inserted = purchaseService.create(purchase);
+        purchaseOrchestrator.executePurchase(purchase);
 
-        if (inserted.isPresent()) {
-            Purchase createdPurchase = inserted.get();
+        URI paymentProcessingUri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/processing/{id}")
+                .buildAndExpand(purchase.getId())
+                .toUri();
 
-            paymentService.processPayment(createdPurchase);
-
-            URI paymentProcessingUri = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/processing/{id}")
-                    .buildAndExpand(createdPurchase.getId())
-                    .toUri();
-
-            return ResponseEntity.created(paymentProcessingUri).body("Payment is being processed. Check status at: " + paymentProcessingUri);
-        } else {
-            return ResponseEntity.badRequest().body("Invalid purchase data provided");
-        }
+        return ResponseEntity.created(paymentProcessingUri).body("Purchase and payment are being processed. Check status at: " + paymentProcessingUri);
     }
 
     @GetMapping("/processing/{id}")
