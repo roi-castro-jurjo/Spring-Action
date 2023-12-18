@@ -25,13 +25,21 @@ public interface PurchaseService {
      */
     public Page<Purchase> getPurchases(PurchaseSearchCriteria criteria, Pageable pageable);
 
+
     /**
-     * Method that allows inserting a new purchase into the database.
-     * @param purchase The data of the purchase to be inserted.
-     * @return The data of the purchase once inserted, including the id.
-     * @throws ResponseStatusException Exception thrown in case any incorrect information is provided.
+     * Creates a new purchase in the database, given the purchase details.
+     *
+     * @param purchase The Purchase object containing details of the new purchase.
+     * @return An Optional containing the created Purchase if successful, or an empty Optional if validation fails.
      */
     Optional<Purchase> create(Purchase purchase);
 
+
+    /**
+     * Handles the scenario where a payment for a purchase fails.
+     * Updates the status of the provided purchase to FAILED and saves the changes to the database.
+     *
+     * @param purchase The Purchase object whose payment has failed.
+     */
     void handlePaymentFailure(Purchase purchase);
 }

@@ -31,10 +31,6 @@ public class PurchaseServiceImpl implements PurchaseService{
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    /**
-     * Constructor of the class
-     * @param purchaseRepository Reference to PurchaseRepository
-     */
     @Autowired
     public PurchaseServiceImpl(PurchaseRepository purchaseRepository, MongoTemplate mongoTemplate){
         this.purchaseRepository = purchaseRepository;
@@ -89,6 +85,13 @@ public class PurchaseServiceImpl implements PurchaseService{
         return new PageImpl<>(purchases, pageable, total);
     }
 
+
+    /**
+     * Checks if a string represents a valid date in the "yyyy-MM-dd" format.
+     *
+     * @param dateStr The string representing the date to be validated.
+     * @return true if the string represents a valid date, false if the string is not a valid date.
+     */
     private boolean isValidDate(String dateStr) {
         if (dateStr == null){
             return false;
@@ -127,6 +130,9 @@ public class PurchaseServiceImpl implements PurchaseService{
         return Optional.of(purchaseRepository.insert(purchase));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void handlePaymentFailure(Purchase purchase) {
         purchase.setStatus(OrderStatus.FAILED);

@@ -25,6 +25,9 @@ public class PaymentServiceImpl implements PaymentService{
         this.random = new Random();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Async
     public CompletableFuture<Boolean> processPayment(Purchase purchase) {
         if (!isValidPaymentDetails(purchase.getPaymentDetails())) {
@@ -50,6 +53,13 @@ public class PaymentServiceImpl implements PaymentService{
         }
     }
 
+
+    /**
+     * Validates the payment details of a purchase.
+     *
+     * @param details The PaymentDetails object to validate.
+     * @return true if all payment details are valid, false otherwise.
+     */
     private boolean isValidPaymentDetails(PaymentDetails details){
         if (details == null || details.getPaymentMethod() == null || details.getPaymentMethod().isEmpty() || details.getFullName() == null || details.getFullName().isEmpty()) {
             return false;
@@ -61,10 +71,25 @@ public class PaymentServiceImpl implements PaymentService{
     }
 
 
+    /**
+     * Validates the card number.
+     * Checks if the card number is not null, follows a 16-digit numeric format, and does not end with '3'.
+     *
+     * @param cardNumber The card number to validate.
+     * @return true if the card number is valid, false otherwise.
+     */
     private boolean isCardNumberValid(String cardNumber) {
         return cardNumber != null && cardNumber.matches("\\d{16}") && !cardNumber.endsWith("3");
     }
 
+
+    /**
+     * Validates the card's expiry date.
+     * Checks if the expiry date is not null, follows the 'MM/YY' format, and is not expired.
+     *
+     * @param cardExpiryDate The expiry date to validate.
+     * @return true if the expiry date is valid, false otherwise.
+     */
     private boolean isCardExpiryDateValid(String cardExpiryDate) {
         if (cardExpiryDate == null || !cardExpiryDate.matches("\\d{2}/\\d{2}") || cardExpiryDate.length() != 5) {
             return false;
@@ -82,6 +107,14 @@ public class PaymentServiceImpl implements PaymentService{
         }
     }
 
+
+    /**
+     * Validates the card's CVC (Card Verification Code).
+     * Checks if the CVC is not null and follows a 3-digit numeric format.
+     *
+     * @param cardCVC The CVC to validate.
+     * @return true if the CVC is valid, false otherwise.
+     */
     private boolean isCardCVCValid(String cardCVC) {
         return cardCVC != null && cardCVC.matches("\\d{3}");
     }

@@ -170,12 +170,20 @@ public class PurchaseController {
 
 
     /**
-     * Inserts a new purchase into the database. The purchase data is validated before insertion.
+     * Initiates the process of creating and paying for a new purchase. This method uses a Saga pattern
+     * to manage distributed transactions. After creating the purchase order, the payment is processed
+     * asynchronously.
+     *
+     * A URI for tracking the process’s status is returned. The current status of the process can be
+     * checked via the provided URI, which will inform whether the purchase and payment have been
+     * successfully completed or if there has been any failure.
      *
      * @param purchase The data of the purchase to be inserted, expected to be valid.
-     * @return A ResponseEntity containing either:
-     *         - The newly created purchase and its access URL (HTTP 201 Created) if insertion is successful.
-     *         - A bad request message (HTTP 400 Bad Request) if the data is invalid or insertion fails.
+     * @return A ResponseEntity containing:
+     *         - A URI for tracking the process of the purchase and payment (HTTP 201 Created).
+     *           This URI points to a resource where the current status of the process can be verified.
+     *         - An error message (HTTP 400 Bad Request) if the provided data is invalid or
+     *           if the insertion of the purchase fails for some reason.
      */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> create(@Valid @RequestBody Purchase purchase) {
@@ -189,6 +197,15 @@ public class PurchaseController {
         return ResponseEntity.created(paymentProcessingUri).body("Purchase and payment are being processed. Check status at: " + paymentProcessingUri);
     }
 
+
+    /**
+     * Checks and returns the payment status of a specific purchase identified by its ID.
+     *
+     * @param id The unique identifier of the purchase whose payment status is to be checked.
+     * @return A ResponseEntity containing:
+     *         - The current payment status of the purchase (HTTP 200 OK) if the purchase is found.
+     *         - A 'not found' response (HTTP 404 Not Found) if there is no purchase associated with the given ID.
+     */
     @GetMapping("/processing/{id}")
     public ResponseEntity<?> checkPaymentStatus(@PathVariable String id) {
         Optional<Purchase> purchase = purchaseService.get(id);
@@ -203,7 +220,5 @@ public class PurchaseController {
 
         return ResponseEntity.notFound().build();
     }
-
-
 
 }

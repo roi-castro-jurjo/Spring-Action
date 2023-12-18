@@ -27,11 +27,6 @@ public class PriceServiceImpl implements PriceService{
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-
-    /**
-     * Constructor of the class
-     * @param priceRepository Instance of the PriceRepository class
-     */
     @Autowired
     public PriceServiceImpl(PriceRepository priceRepository, MongoTemplate mongoTemplate){
         this.priceRepository = priceRepository;
@@ -112,8 +107,6 @@ public class PriceServiceImpl implements PriceService{
      * @param dateStr The string representing the date to be validated.
      * @return true if the string represents a valid date, false if the string is not a valid date.
      */
-
-
     private boolean isValidDate(String dateStr) {
         if (dateStr == null){
             return false;

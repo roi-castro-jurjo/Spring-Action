@@ -16,6 +16,10 @@ public class PurchaseOrchestratorImpl implements PurchaseOrchestrator{
         this.purchaseService = purchaseService;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void executePurchase(Purchase purchase) {
         // Etapa 1: Crear orden de compra
