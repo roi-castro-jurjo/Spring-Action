@@ -1,5 +1,6 @@
 package gal.usc.grei.cn.precios.service;
 
+import gal.usc.grei.cn.precios.domain.OrderStatus;
 import gal.usc.grei.cn.precios.domain.PaymentDetails;
 import gal.usc.grei.cn.precios.domain.Purchase;
 import gal.usc.grei.cn.precios.domain.criteria.PurchaseSearchCriteria;
@@ -111,54 +112,22 @@ public class PurchaseServiceImpl implements PurchaseService{
             return Optional.empty();
         }
 
+        purchase.setStatus(OrderStatus.PENDING);
+
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        purchase.setDate(currentDate);
+
         if (purchase.getSymbol() == null || purchase.getSymbol().isEmpty() ||
-            purchase.getVolume() == null ||
-            purchase.getUnit() == null ||
-            purchase.getTotal() == null ||
-            !isValidDate(purchase.getDate()) ||
-            purchase.getStatus() == null ||
-            isValidPaymentDetails(purchase.getPaymentDetails())) {
+                purchase.getVolume() == null ||
+                purchase.getUnit() == null ||
+                purchase.getTotal() == null) {
             return Optional.empty();
         }
 
         return Optional.of(purchaseRepository.insert(purchase));
     }
 
-    private boolean isValidPaymentDetails(PaymentDetails details){
-        if (details == null || details.getPaymentMethod() == null || details.getPaymentMethod().isEmpty() || details.getFullName() == null || details.getFullName().isEmpty()) {
-            return false;
-        }
 
-        return isCardNumberValid(details.getCardNumber()) &&
-                isCardExpiryDateValid(details.getCardExpiryDate()) &&
-                isCardCVCValid(details.getCardCVC());
-    }
-
-
-    private boolean isCardNumberValid(String cardNumber) {
-        return cardNumber != null && cardNumber.matches("\\d{16}") && !cardNumber.endsWith("3");
-    }
-
-    private boolean isCardExpiryDateValid(String cardExpiryDate) {
-        if (cardExpiryDate == null || !cardExpiryDate.matches("\\d{2}/\\d{2}") || cardExpiryDate.length() != 5) {
-            return false;
-        }
-
-        try {
-            String[] parts = cardExpiryDate.split("/");
-            int month = Integer.parseInt(parts[0]);
-            int year = Integer.parseInt(parts[1]) + 2000;
-
-            LocalDate expiryDate = LocalDate.of(year, month, 1).with(TemporalAdjusters.lastDayOfMonth());
-            return !expiryDate.isBefore(LocalDate.now());
-        } catch (DateTimeException e) {
-            return false;
-        }
-    }
-
-    private boolean isCardCVCValid(String cardCVC) {
-        return cardCVC != null && cardCVC.matches("\\d{3}");
-    }
 
 
 

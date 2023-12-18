@@ -1,7 +1,9 @@
 package gal.usc.grei.cn.precios.controller;
 
+import gal.usc.grei.cn.precios.domain.OrderStatus;
 import gal.usc.grei.cn.precios.domain.Purchase;
 import gal.usc.grei.cn.precios.domain.criteria.PurchaseSearchCriteria;
+import gal.usc.grei.cn.precios.service.PaymentService;
 import gal.usc.grei.cn.precios.service.PriceService;
 import gal.usc.grei.cn.precios.service.PurchaseService;
 import jakarta.validation.Valid;
@@ -25,14 +27,16 @@ import java.util.regex.Pattern;
 @RequestMapping("/purchases")
 public class PurchaseController {
     private final PurchaseService purchaseService;
+    private final PaymentService paymentService;
 
     /**
      * Constructor of the class
      * @param purchaseService Instance of the PurchaseService class
      */
     @Autowired
-    public PurchaseController(PurchaseService purchaseService) {
+    public PurchaseController(PurchaseService purchaseService, PaymentService paymentService) {
         this.purchaseService = purchaseService;
+        this.paymentService = paymentService;
     }
 
 
@@ -170,19 +174,41 @@ public class PurchaseController {
      *         - The newly created purchase and its access URL (HTTP 201 Created) if insertion is successful.
      *         - A bad request message (HTTP 400 Bad Request) if the data is invalid or insertion fails.
      */
-    @PostMapping(path = "/purchases", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> create(@Valid @RequestBody Purchase purchase) {
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> create(@Valid @RequestBody Purchase purchase) {
         Optional<Purchase> inserted = purchaseService.create(purchase);
 
         if (inserted.isPresent()) {
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(inserted.get().getId())
+            Purchase createdPurchase = inserted.get();
+
+            paymentService.processPayment(createdPurchase);
+
+            URI paymentProcessingUri = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/processing/{id}")
+                    .buildAndExpand(createdPurchase.getId())
                     .toUri();
-            return ResponseEntity.created(location).body(inserted.get());
+
+            return ResponseEntity.created(paymentProcessingUri).body("Payment is being processed. Check status at: " + paymentProcessingUri);
         } else {
             return ResponseEntity.badRequest().body("Invalid purchase data provided");
         }
     }
+
+    @GetMapping("/processing/{id}")
+    public ResponseEntity<?> checkPaymentStatus(@PathVariable String id) {
+        Optional<Purchase> purchase = purchaseService.get(id);
+
+        if (purchase.isPresent()) {
+            OrderStatus status = purchase.get().getStatus();
+            if (status == OrderStatus.PAID || status == OrderStatus.FAILED) {
+                return ResponseEntity.ok("Payment status for purchase " + id + " is: " + status);
+            }
+            return ResponseEntity.ok("Payment still processing for purchase " + id);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+
 
 }

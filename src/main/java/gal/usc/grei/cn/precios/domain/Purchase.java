@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -28,7 +29,6 @@ public class Purchase {
     private Float total;
     @NotNull(message = "The payment details cannot be empty")
     private PaymentDetails paymentDetails;
-    @NotNull(message = "The status cannot be empty")
     private OrderStatus status;
 
     public String getId() {
