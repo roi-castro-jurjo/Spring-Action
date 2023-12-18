@@ -22,16 +22,13 @@ public class PurchaseOrchestratorImpl implements PurchaseOrchestrator{
      */
     @Override
     public void executePurchase(Purchase purchase) {
-        // Etapa 1: Crear orden de compra
         Optional<Purchase> createdPurchase = purchaseService.create(purchase);
 
         if (createdPurchase.isPresent()) {
-            // Etapa 2: Procesar pago
             CompletableFuture<Boolean> paymentResult = paymentService.processPayment(createdPurchase.get());
 
             paymentResult.thenAccept(paymentSuccess -> {
                 if (!paymentSuccess) {
-                    // Etapa de Compensación: Manejar fallo de pago
                     purchaseService.handlePaymentFailure(createdPurchase.get());
                 }
             });
