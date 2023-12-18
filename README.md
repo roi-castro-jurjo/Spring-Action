@@ -9,5 +9,5 @@ This application is designed to manage and process purchase stock purchases, int
 - Saga Pattern Implementation: Ensures transactional integrity across microservices.
 
 ## Technical Stack
-Spring Boot: For building the microservices.
-MongoDB: As the database for storing purchase and stock details.
+- Spring Boot: For building the microservices.
+- MongoDB: As the database for storing purchase and stock details.
